@@ -1,25 +1,58 @@
 const express = require("express");
 const cors = require("cors");
+require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
+var admin = require("firebase-admin");
 const port = process.env.PORT || 2005;
+// console.log(process.env)
 
-const cars = require("./Cars.json");
+var serviceAccount = require("./fire_admin_key.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
 
 // middleware
 app.use(cors());
 app.use(express.json());
 
+const logger = (req, res, next) => {
+  console.log("logging info");
+  next();
+};
+
+const verifyFirebaseToken = async(req, res, next) => {
+  console.log("in the verify middleware", req.headers.authorization);
+
+  if (!req.headers.authorization) {
+    return res.status(401).send({ message: "unauthorized access" });
+  }
+  const token = req.headers.authorization.split(" ")[1];
+  if (!token) {
+    return res.status(401).send({ message: "unauthorized access" });
+  }
+
+  // verify id token
+  try {
+    const userInfo = await admin.auth().verifyIdToken(token);
+    req.token_email = userInfo.email;
+    // console.log("after token verify", userInfo);
+    next();
+  }
+  catch {
+    return res.status(401).send({ message: "unauthorized access" });
+  }
+};
+
 app.get("/", (req, res) => {
   res.send("Simple Crud server is running");
 });
 
-// userName & password
-// simpleDBUser
-// B1uT03aaPOrwDfEe
-// const uri = "mongodb+srv://simpleDBUser:<db_password>@tuser579.arztfp8.mongodb.net/?appName=Tuser579";
+
 const uri =
-  "mongodb+srv://simpleDBUser:B1uT03aaPOrwDfEe@tuser579.arztfp8.mongodb.net/?appName=Tuser579";
+  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@tuser579.arztfp8.mongodb.net/?appName=Tuser579`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -68,11 +101,16 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/myCars", async (req, res) => {
+    app.get("/myCars", logger, verifyFirebaseToken, async (req, res) => {
       // console.log(req.query);
+      // console.log('headers' , req);
+
       const email = req.query.email;
       const query = {};
       if (email) {
+        if(email !== req.token_email) {
+          res.status(403).send({message: "forbidden access"});
+        }
         query.email = email;
       }
 
@@ -218,7 +256,7 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
