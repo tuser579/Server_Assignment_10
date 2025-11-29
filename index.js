@@ -1,30 +1,33 @@
 const express = require("express");
 const cors = require("cors");
-require('dotenv').config();
+require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
-var admin = require("firebase-admin");
+const admin = require("firebase-admin");
 const port = process.env.PORT || 2005;
 // console.log(process.env)
 
-var serviceAccount = require("./fire_admin_key.json");
+// var serviceAccount = require("./fire_admin_key.json");
+
+// index.js
+const decoded = Buffer.from(process.env.FIREBASE_SERVICE_KEY, "base64").toString("utf8");
+const serviceAccount = JSON.parse(decoded);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
-});
-
+})
 
 // middleware
 app.use(cors());
 app.use(express.json());
 
-const logger = (req, res, next) => {
-  console.log("logging info");
-  next();
-};
+// const logger = (req, res, next) => {
+//   console.log("logging info");
+//   next();
+// };
 
-const verifyFirebaseToken = async(req, res, next) => {
-  console.log("in the verify middleware", req.headers.authorization);
+const verifyFirebaseToken = async (req, res, next) => {
+  // console.log("in the verify middleware", req.headers.authorization);
 
   if (!req.headers.authorization) {
     return res.status(401).send({ message: "unauthorized access" });
@@ -40,8 +43,7 @@ const verifyFirebaseToken = async(req, res, next) => {
     req.token_email = userInfo.email;
     // console.log("after token verify", userInfo);
     next();
-  }
-  catch {
+  } catch {
     return res.status(401).send({ message: "unauthorized access" });
   }
 };
@@ -50,9 +52,7 @@ app.get("/", (req, res) => {
   res.send("Simple Crud server is running");
 });
 
-
-const uri =
-  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@tuser579.arztfp8.mongodb.net/?appName=Tuser579`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@tuser579.arztfp8.mongodb.net/?appName=Tuser579`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -101,15 +101,15 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/myCars", logger, verifyFirebaseToken, async (req, res) => {
+    app.get("/myCars", verifyFirebaseToken , async (req, res) => {
       // console.log(req.query);
       // console.log('headers' , req);
 
       const email = req.query.email;
       const query = {};
       if (email) {
-        if(email !== req.token_email) {
-          res.status(403).send({message: "forbidden access"});
+        if (email !== req.token_email) {
+          res.status(403).send({ message: "forbidden access" });
         }
         query.email = email;
       }
@@ -135,7 +135,7 @@ async function run() {
       res.send(result);
     });
 
-    app.patch("/cars/:id", async (req, res) => {
+    app.patch("/cars/:id", verifyFirebaseToken , async (req, res) => {
       const id = req.params.id;
       const updatedCar = req.body;
       const query = { _id: new ObjectId(id) };
@@ -159,7 +159,7 @@ async function run() {
       res.send(result);
     });
 
-    app.patch("/carsBooking/:id", async (req, res) => {
+    app.patch("/carsBooking/:id", verifyFirebaseToken , async (req, res) => {
       const id = req.params.id;
       const updatedCar = req.body;
       const query = { _id: new ObjectId(id) };
@@ -177,7 +177,7 @@ async function run() {
       res.send(result);
     });
 
-    app.delete("/cars/:id", async (req, res) => {
+    app.delete("/cars/:id", verifyFirebaseToken , async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await usersCollectionCars.deleteOne(query);
@@ -185,10 +185,14 @@ async function run() {
     });
 
     // booking related database
-    app.get("/myBookings", async (req, res) => {
+    app.get("/myBookings", verifyFirebaseToken , async (req, res) => {
+      // console.log("headers in the bookings" , req.headers);
       const email = req.query.email;
       const query = {};
       if (email) {
+        if (email !== req.token_email) {
+          res.status(403).send({ message: "forbidden access" });
+        }
         query.customerEmail = email;
       }
 
@@ -197,14 +201,14 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/myBookings", async (req, res) => {
+    app.post("/myBookings", verifyFirebaseToken , async (req, res) => {
       const bookingInformation = req.body;
       // console.log("id" , bookingInformation);
       const result = await usersCollectionBooking.insertOne(bookingInformation);
       res.send(result);
     });
 
-    app.delete("/myBookings/:id", async (req, res) => {
+    app.delete("/myBookings/:id", verifyFirebaseToken , async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await usersCollectionBooking.deleteOne(query);
