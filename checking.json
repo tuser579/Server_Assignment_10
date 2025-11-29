@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Toyota Camry 2023",
+    "description": "A reliable and fuel-efficient sedan perfect for city driving and long trips. Features advanced safety systems and comfortable interior.",
+    "image": "https://i.postimg.cc/4NR1RFBR/Toyota-Camry-2023.jpg",
+    "category": "Sedan",
+    "price": 65,
+    "location": "Downtown City Center",
+    "status": "Available",
+    "providerName": "Elite Rentals",
+    "email": "contact@eliterentals.com",
+    "rating": 4.8,
+    "reviews": 250,
+    "length": 1
+  },
+  {
+    "name": "Honda Civic 2022",
+    "description": "A stylish compact sedan with excellent fuel economy and modern tech features.",
+    "image": "https://i.postimg.cc/3wLzYh9P/Honda-Civic-2022.jpg",
+    "category": "Sedan",
+    "price": 55,
+    "location": "Airport Road",
+    "status": "Available",
+    "providerName": "CityDrive Rentals",
+    "email": "info@citydrive.com",
+    "rating": 4.6,
+    "reviews": 180,
+    "length": 2
+  },
+  {
+    "name": "BMW X5 2023",
+    "description": "A luxury SUV offering powerful performance, spacious interior, and advanced safety systems.",
+    "image": "https://i.postimg.cc/7YhLzYh9/BMW-X5-2023.jpg",
+    "category": "SUV",
+    "price": 120,
+    "location": "Uptown Business District",
+    "status": "Available",
+    "providerName": "Luxury Wheels",
+    "email": "support@luxurywheels.com",
+    "rating": 4.9,
+    "reviews": 320,
+    "length": 3
+  },
+  {
+    "name": "Tesla Model 3 2023",
+    "description": "An electric sedan with cutting-edge technology, autopilot features, and zero emissions.",
+    "image": "https://i.postimg.cc/9QhLzYh9/Tesla-Model-3-2023.jpg",
+    "category": "Electric",
+    "price": 100,
+    "location": "Tech Park Avenue",
+    "status": "Available",
+    "providerName": "GreenDrive Rentals",
+    "email": "contact@greendrive.com",
+    "rating": 4.7,
+    "reviews": 210,
+    "length": 4
+  },
+  {
+    "name": "Ford Mustang 2021",
+    "description": "A classic sports car with powerful engine, sleek design, and thrilling performance.",
+    "image": "https://i.postimg.cc/5QhLzYh9/Ford-Mustang-2021.jpg",
+    "category": "Sports",
+    "price": 90,
+    "location": "Beachside Boulevard",
+    "status": "Available",
+    "providerName": "Speedy Rentals",
+    "email": "rent@speedycars.com",
+    "rating": 4.5,
+    "reviews": 150,
+    "length": 5
+  }
+]
